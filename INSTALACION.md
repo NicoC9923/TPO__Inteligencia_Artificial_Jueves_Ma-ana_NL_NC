@@ -3,8 +3,6 @@
 Esta guía instala **todo lo necesario** para correr los laboratorios de robots
 Unitree. Se hace **una sola vez** por computadora.
 
-Si ya tenés todo instalado, andá directo a `LEEME_DOCENTE.md` o `LEEME_ESTUDIANTE.md`.
-
 > **Atajo:** el script `INICIAR_SIMULADOR` intenta instalar solo lo que falte.
 > Probá primero con él. Esta guía es para cuando algo falla o querés entender
 > qué está pasando.
@@ -19,7 +17,6 @@ Si ya tenés todo instalado, andá directo a `LEEME_DOCENTE.md` o `LEEME_ESTUDIA
 | **MuJoCo** | la ventana 3D donde ves el robot | `pip` |
 | **Visual C++ Redistributable** | sólo Windows: MuJoCo no carga sin él | descarga aparte |
 | **Modelos del G1 y el Go2** | el robot que ves en pantalla | **ya viene en el paquete** |
-| **Carpeta del laboratorio** | el TP en sí | `05LaboratoriosTPs/` |
 
 **Eso es todo.** Un `pip install mujoco` y listo. No hace falta CycloneDDS, ni
 el SDK de Unitree, ni compilar nada, ni tener internet después de bajar la
@@ -230,10 +227,9 @@ primero a propósito, para que el resultado no dependa de cada máquina.
 
 ## Paso 4 — Probar que todo funciona
 
-Desde la carpeta del laboratorio:
+Desde la raíz del repo:
 
 ```bash
-cd 05LaboratoriosTPs/TP01_Fundamentos_de_Informatica
 cd entorno && python3 -m sim --solo-revisar
 ```
 
@@ -324,7 +320,7 @@ falla, instalá MuJoCo en el Python que usás por defecto.
 
 ```bash
 python3 -m pip install --user mujoco
-cd 05LaboratoriosTPs/TP01_Fundamentos_de_Informatica && ./INICIAR_SIMULADOR.sh
+./INICIAR_SIMULADOR.sh
 ```
 
 ### Windows
@@ -332,7 +328,7 @@ cd 05LaboratoriosTPs/TP01_Fundamentos_de_Informatica && ./INICIAR_SIMULADOR.sh
 ```bat
 py -3 -m pip install --user mujoco
 py -3 -c "import mujoco; print(mujoco.__version__)"
-cd 05LaboratoriosTPs\TP01_Fundamentos_de_Informatica && INICIAR_SIMULADOR.bat
+INICIAR_SIMULADOR.bat
 ```
 
 Si el segundo comando falla, instalá el **Visual C++ Redistributable**
