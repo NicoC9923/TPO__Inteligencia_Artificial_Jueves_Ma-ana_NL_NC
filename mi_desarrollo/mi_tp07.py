@@ -92,29 +92,40 @@ class ClasificadorIntencion:
         t = texto.strip().lower()
 
         # 0. Fuera de dominio: preguntas conversacionales que no son órdenes de robot
-        if re.search(r'\b(?:c[oó]mo\s+te\s+llam[aá]s|qui[eé]n\s+sos|qu[eé]\s+hora|qu[eé]\s+onda|clima|chiste)\b', t):
+        #    (ES + EN)
+        if re.search(r'\b(?:c[oó]mo\s+te\s+llam[aá]s|qui[eé]n\s+sos|qu[eé]\s+hora|qu[eé]\s+onda|clima|chiste'
+                      r'|what.?s\s+your\s+name|who\s+are\s+you|what\s+time|tell\s+me\s+a\s+joke|what.?s\s+up|how.?s\s+the\s+weather)\b', t):
             return "DESCONOCIDO"
 
         # 1. DETENERSE (evaluado antes de MOVER para contemplar negaciones como "no avances")
+        #    (ES + EN)
         if re.search(r'\bno\s+(?:avances?|camines?|te\s+muevas?|sigas?)\b', t):
             return "DETENERSE"
-        if re.search(r'\b(?:deten(?:te|ete|erse|er)|par[aá](?:r|te|lo|todo)?|fren[aá](?:r|te)?|quieto|alto|stop|basta)\b', t):
+        if re.search(r"\b(?:don'?t|do\s+not)\s+(?:move|walk|go|continue)\b", t):
+            return "DETENERSE"
+        if re.search(r'\b(?:deten(?:te|ete|erse|er)|par[aá](?:r|te|lo|todo)?|fren[aá](?:r|te)?|quieto|alto|stop|basta'
+                      r'|halt|freeze|hold\s+still|enough|cease)\b', t):
             return "DETENERSE"
 
-        # 2. CONSULTAR_ESTADO
-        if re.search(r'\b(?:bater[ií]a|telemetr[ií]a|estado|carga)\b', t):
+        # 2. CONSULTAR_ESTADO (ES + EN)
+        if re.search(r'\b(?:bater[ií]a|telemetr[ií]a|estado|carga|battery|status|charge|telemetry)\b', t):
             return "CONSULTAR_ESTADO"
 
-        # 3. SALUDO
-        if re.search(r'\b(?:salud[aá](?:r|te|nos)?|saludo|hac[eé](?:le)?\s+(?:un\s+)?saludo|hacele\s+hola)\b', t):
+        # 3. SALUDO (ES + EN)
+        if re.search(r'\b(?:salud[aá](?:r|te|nos)?|saludo|hac[eé](?:le)?\s+(?:un\s+)?saludo|hacele\s+hola'
+                      r'|greet|wave|say\s+hi|say\s+hello|hello|hi)\b', t):
             return "SALUDO"
 
         # 4. GIRAR (evaluado antes de MOVER para órdenes compuestas como "girá 45° a la derecha y después avanzá")
-        if re.search(r'\b(?:gir[aá](?:r|te)?|rot[aá](?:r)?|dobl[aá](?:r)?|vir[aá](?:r)?|media\s+vuelta|vuelta\s+completa)\b', t):
+        #    (ES + EN)
+        if re.search(r'\b(?:gir[aá](?:r|te)?|rot[aá](?:r)?|dobl[aá](?:r)?|vir[aá](?:r)?|media\s+vuelta|vuelta\s+completa'
+                      r'|turn|rotate|spin|pivot)\b', t):
             return "GIRAR"
 
-        # 5. MOVER
-        if re.search(r'\b(?:avanz[aá](?:r)?|camin[aá](?:r)?|mu[eé]vete|movete|mover(?:se)?|desplaz[aá](?:r)?|retroced[eé](?:r)?|and[aá](?:r)?\s+(?:para|hacia)?|and[aá]\b|march[aá](?:r)?)\b', t):
+        # 5. MOVER (ES + EN)
+        if re.search(r'\b(?:avanz[aá](?:r)?|camin[aá](?:r)?|mu[eé]vete|movete|mover(?:se)?|desplaz[aá](?:r)?|retroced[eé](?:r)?'
+                      r'|and[aá](?:r)?\s+(?:para|hacia)?|and[aá]\b|march[aá](?:r)?'
+                      r'|move|walk|advance|go\s+forward|step\s+forward|back\s+up|march)\b', t):
             return "MOVER"
 
         return "DESCONOCIDO"
@@ -152,37 +163,37 @@ class ExtractorParametros:
         params = {}
         t = texto.strip().lower()
 
-        # 1. Distancia en metros (ej: "2 metros", "0.5 metros", "1 metro", "100 metros")
+        # 1. Distancia en metros (ej: "2 metros", "0.5 metros", "1 metro", "100 metros"; EN: "2 meters")
         # Se evita capturar "m/s" como distancia usando negative lookahead
-        m_dist = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:metros?|m\b)(?!\s*/\s*s)', t)
+        m_dist = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:metros?|meters?|m\b)(?!\s*/\s*s)', t)
         if m_dist:
             params["distancia_m"] = float(m_dist.group(1).replace(',', '.'))
 
-        # 2. Velocidad en m/s o adverbios ("2 m/s", "0.2 m/s", "despacio", "rápido")
-        m_vel = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:m/s|ms\b|metros?\s*(?:por|/)\s*seg(?:undo)?s?)', t)
+        # 2. Velocidad en m/s o adverbios (ES: "2 m/s", "despacio", "rápido"; EN: "slow", "fast")
+        m_vel = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:m/s|ms\b|metros?\s*(?:por|/)\s*seg(?:undo)?s?|meters?\s*(?:per|/)\s*sec(?:ond)?s?)', t)
         if m_vel:
             params["velocidad_ms"] = float(m_vel.group(1).replace(',', '.'))
-        elif re.search(r'\b(?:despacio|lento|despacito)\b', t):
+        elif re.search(r'\b(?:despacio|lento|despacito|slow|slowly)\b', t):
             params["velocidad_ms"] = 0.2
-        elif re.search(r'\b(?:r[aá]pido|veloz|r[aá]pidamente)\b', t):
+        elif re.search(r'\b(?:r[aá]pido|veloz|r[aá]pidamente|fast|quick|quickly)\b', t):
             params["velocidad_ms"] = 0.5
 
-        # 3. Ángulo en grados o expresiones ("90 grados", "45°", "media vuelta")
-        m_ang = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:grados?|°|deg\b)', t)
+        # 3. Ángulo en grados o expresiones (ES: "90 grados", "media vuelta"; EN: "90 degrees", "half turn")
+        m_ang = re.search(r'(\d+(?:[.,]\d+)?)\s*(?:grados?|°|deg\b|degrees?)', t)
         if m_ang:
             val = float(m_ang.group(1).replace(',', '.'))
             params["angulo_deg"] = int(val) if val.is_integer() else val
-        elif "media vuelta" in t:
+        elif "media vuelta" in t or "half turn" in t:
             params["angulo_deg"] = 180
 
-        # 4. Dirección ("derecha", "izquierda", "atras", "adelante")
-        if re.search(r'\bderecha\b', t):
+        # 4. Dirección (ES: "derecha", "izquierda", "atras", "adelante"; EN: "right", "left", "back", "forward")
+        if re.search(r'\b(?:derecha|right)\b', t):
             params["direccion"] = "derecha"
-        elif re.search(r'\bizquierda\b', t):
+        elif re.search(r'\b(?:izquierda|left)\b', t):
             params["direccion"] = "izquierda"
-        elif re.search(r'\b(?:atr[aá]s|retroced[eé](?:r)?)\b', t):
+        elif re.search(r'\b(?:atr[aá]s|retroced[eé](?:r)?|back(?:wards?)?)\b', t):
             params["direccion"] = "atras"
-        elif re.search(r'\badelante\b', t):
+        elif re.search(r'\b(?:adelante|forward)\b', t):
             params["direccion"] = "adelante"
 
         return params
@@ -214,7 +225,18 @@ class ValidadorSeguridad:
         "cae", "caé", "caer",
         "fuerza", "forzar",
         "choca", "chocá", "chocar",
-        "muerde", "morder"
+        "muerde", "morder",
+        # English
+        "jump", "jumps", "jumping",
+        "run", "runs", "running",
+        "push", "pushes", "pushing",
+        "hit", "hits", "hitting", "punch", "punches", "punching",
+        "break", "breaks", "breaking",
+        "throw", "throws", "throwing",
+        "fall", "falls", "falling",
+        "force", "forces", "forcing",
+        "crash", "crashes", "crashing",
+        "bite", "bites", "biting",
     )
 
     # Límites de seguridad (según consigna del TP y límites de laboratorio)
