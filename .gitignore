@@ -13,7 +13,6 @@ __pycache__/
 venv/
 env/
 ENV/
-01Investigacion/recuperadorDatos/env/
 
 # Estado en ejecucion del simulador de los laboratorios
 .simulador_activo.json

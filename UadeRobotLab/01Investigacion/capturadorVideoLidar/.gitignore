@@ -1,6 +1,0 @@
-.venv-win/
-build/
-dist/
-captures/
-*.spec
-__pycache__/

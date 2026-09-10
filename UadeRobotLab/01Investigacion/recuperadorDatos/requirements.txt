@@ -1,4 +1,0 @@
-PyQt6
-pyqtgraph
-openpyxl
-pyinstaller
