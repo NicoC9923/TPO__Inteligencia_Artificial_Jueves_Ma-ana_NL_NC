@@ -111,9 +111,14 @@ class ClasificadorIntencion:
         if re.search(r'\b(?:bater[ií]a|telemetr[ií]a|estado|carga|battery|status|charge|telemetry)\b', t):
             return "CONSULTAR_ESTADO"
 
-        # 3. SALUDO (ES + EN)
+        # 3. SALUDO (ES + EN). Incluye "levantá el brazo"/"move your arm up":
+        #    no hay un gesto propio de "brazo arriba" en el robot (ver
+        #    entorno/sim/acciones.py, lista blanca), asi que se mapea al
+        #    saludo (WaveHand), que es el gesto que de verdad levanta el brazo.
         if re.search(r'\b(?:salud[aá](?:r|te|nos)?|saludo|hac[eé](?:le)?\s+(?:un\s+)?saludo|hacele\s+hola'
-                      r'|greet|wave|say\s+hi|say\s+hello|hello|hi)\b', t):
+                      r'|greet|wave|say\s+hi|say\s+hello|hello|hi'
+                      r'|levant[aá](?:r|te)?\s+(?:el\s+)?(?:brazo|mano)|sub[ií](?:r|te)?\s+(?:el\s+)?brazo'
+                      r'|move\s+(?:your\s+)?arm\s+up|raise\s+(?:your\s+)?arm|lift\s+(?:your\s+)?arm|put\s+(?:your\s+)?arm\s+up)\b', t):
             return "SALUDO"
 
         # 4. GIRAR (evaluado antes de MOVER para órdenes compuestas como "girá 45° a la derecha y después avanzá")

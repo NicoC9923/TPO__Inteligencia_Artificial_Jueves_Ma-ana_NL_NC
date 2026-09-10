@@ -13,21 +13,29 @@ if not defined CHROME if exist "%ProgramFiles(x86)%\Google\Chrome\Application\ch
 if not defined CHROME if exist "%LocalAppData%\Google\Chrome\Application\chrome.exe" set "CHROME=%LocalAppData%\Google\Chrome\Application\chrome.exe"
 
 echo.
-echo   Ojo: servidor_voz.py tiene que estar corriendo antes de esto
-echo   (otra ventana con "py -3 servidor_voz.py"), si no la pagina no carga.
+echo   Si todavia no abriste INICIAR_SIMULADOR.bat, el robot no se va a
+echo   mover, pero la pagina y el reconocimiento de voz andan igual.
 echo.
+echo   Iniciando servidor_voz.py en una ventana aparte...
+start "Servidor de voz" "%~dp0mi_desarrollo\_iniciar_servidor.bat"
 
-if defined CHROME (
-    echo   Abriendo Chrome en %URL%
-    start "" "%CHROME%" "%URL%"
-) else (
-    echo   No se encontro Chrome instalado en las rutas habituales.
-    echo   Probando por PATH / registro de Windows...
-    start chrome "%URL%"
-    echo.
-    echo   Si se abrio Brave u otro navegador en vez de Chrome, el
-    echo   reconocimiento de voz NO va a andar (error "network"): abri
-    echo   %URL% a mano en Chrome.
-)
+echo   Esperando a que levante el servidor...
+ping -n 4 127.0.0.1 >nul
 
+if not defined CHROME goto :sinchrome
+
+echo   Abriendo Chrome en %URL%
+start "" "%CHROME%" "%URL%"
+goto :fin
+
+:sinchrome
+echo   No se encontro Chrome instalado en las rutas habituales.
+echo   Probando por PATH / registro de Windows...
+start chrome "%URL%"
+echo.
+echo   Si se abrio Brave u otro navegador en vez de Chrome, el
+echo   reconocimiento de voz NO va a andar (error "network"): abri
+echo   %URL% a mano en Chrome.
+
+:fin
 endlocal

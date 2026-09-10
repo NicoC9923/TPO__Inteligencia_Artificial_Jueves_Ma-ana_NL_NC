@@ -42,6 +42,9 @@ casos_clasificador = [
     ("stop", "DETENERSE"),
     ("don't move", "DETENERSE"),
     ("say hello", "SALUDO"),
+    ("move your arm up", "SALUDO"),
+    ("raise your arm", "SALUDO"),
+    ("levantá el brazo", "SALUDO"),
     ("what's your battery status", "CONSULTAR_ESTADO"),
     ("what's your name", "DESCONOCIDO"),
 ]
