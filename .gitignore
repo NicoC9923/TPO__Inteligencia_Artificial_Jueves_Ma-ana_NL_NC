@@ -21,3 +21,6 @@ ENV/
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Enlace local de Claude a las skills versionadas en .agents.
+.claude/
